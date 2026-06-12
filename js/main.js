@@ -16,6 +16,14 @@ function setUser(user) {
     localStorage.setItem("cafeUser", JSON.stringify(user));
 }
 
+function requireLogin() {
+    if (!getUser()) {
+        window.location.href = "login.html";
+        return false;
+    }
+    return true;
+}
+
 function logout() {
     localStorage.removeItem("cafeUser");
     localStorage.removeItem("adminUser");
@@ -23,11 +31,4 @@ function logout() {
     window.location.href = "login.html";
 }
 
-function requireLogin() {
-    if (!getUser()) {
-        window.location.href = "login.html";
-        return false;
-    }
-
-    return true;
-}
+window.defaultMenuItems = menuItems;
