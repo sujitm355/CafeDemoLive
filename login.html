@@ -153,13 +153,15 @@
 </div>
 
 <script>
+const BASE_URL = "https://sujitm355.github.io/Cafe_Management_Website/";
+
 function doLogin() {
     const identifier = document.getElementById("identifier").value.trim();
     const password = document.getElementById("password").value.trim();
 
     if (!identifier || !password) {
         showMsg("Please fill in all fields.", "error");
-        return false;
+        return;
     }
 
     localStorage.removeItem("cafeUser");
@@ -172,8 +174,8 @@ function doLogin() {
             role: "ADMIN"
         }));
 
-        location.replace("admin-dashboard.html");
-        return false;
+        window.location.href = BASE_URL + "admin-dashboard.html";
+        return;
     }
 
     if (identifier === "staff" && password === "staff123") {
@@ -183,8 +185,8 @@ function doLogin() {
             role: "STAFF"
         }));
 
-        location.replace("staff-dashboard.html");
-        return false;
+        window.location.href = BASE_URL + "staff-dashboard.html";
+        return;
     }
 
     const users = JSON.parse(localStorage.getItem("cafeUsers")) || [];
@@ -204,12 +206,11 @@ function doLogin() {
             mobile: foundUser.mobile
         }));
 
-        location.replace("index.html");
-        return false;
+        window.location.href = BASE_URL + "index.html";
+        return;
     }
 
     showMsg("Invalid login credentials.", "error");
-    return false;
 }
 
 function showMsg(text, type) {
