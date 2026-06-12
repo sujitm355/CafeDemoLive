@@ -351,7 +351,14 @@ function loadOrders() {
                 <td>${order.phone || "-"}</td>
                 <td>${itemText}</td>
                 <td>Rs. ${order.totalAmount || 0}</td>
-                <td>${order.orderStatus || "CONFIRMED"}</td>
+                <td>
+    <select onchange="updateOrderStatus('${order.orderNumber}', this.value)">
+        <option value="PLACED" ${order.orderStatus === "PLACED" ? "selected" : ""}>PLACED</option>
+        <option value="PREPARING" ${order.orderStatus === "PREPARING" ? "selected" : ""}>PREPARING</option>
+        <option value="OUT_FOR_DELIVERY" ${order.orderStatus === "OUT_FOR_DELIVERY" ? "selected" : ""}>OUT FOR DELIVERY</option>
+        <option value="DELIVERED" ${order.orderStatus === "DELIVERED" ? "selected" : ""}>DELIVERED</option>
+    </select>
+</td>
             </tr>
         `;
     }).join("");
@@ -374,6 +381,33 @@ function loadReviews() {
 function logout() {
     localStorage.removeItem("adminUser");
     window.location.href = "login.html";
+}
+function updateOrderStatus(orderNumber, newStatus) {
+
+    let orders =
+        JSON.parse(localStorage.getItem("orders")) || [];
+
+    orders = orders.map(order => {
+
+        if (order.orderNumber === orderNumber) {
+
+            order.orderStatus = newStatus;
+        }
+
+        return order;
+    });
+
+    localStorage.setItem(
+        "orders",
+        JSON.stringify(orders)
+    );
+
+    alert(
+        "Order status updated to " +
+        newStatus
+    );
+
+    loadOrders();
 }
 
 loadDashboard();
