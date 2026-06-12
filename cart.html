@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Sujit's Cafe</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .cart-header {
+            background: #000;
+            color: #fff;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header button {
+            margin-left: 10px;
+            padding: 9px 18px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-wrapper {
+            max-width: 1100px;
+            margin: 35px auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .selected-items-heading {
+            text-align: center;
+            font-size: 38px;
+            margin-bottom: 25px;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cart-table th {
+            background: #000;
+            color: #fff;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .cart-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        .cart-table img {
+            width: 75px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .qty-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-box button {
+            width: 32px;
+            height: 32px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            background: #fff !important;
+            color: #c0392b !important;
+            border: 1px solid #c0392b !important;
+            font-size: 18px;
+        }
+
+        .cart-summary-card {
+            margin-top: 25px;
+            padding: 20px 25px;
+            background: #f5f0eb;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart-total-box {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .checkout-btn {
+            min-width: 240px;
+            padding: 14px 22px;
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="cart-page">
+    <div class="cart-header">
+        <h1>Your Cart</h1>
+        <div>
+            <button onclick="goToMenu()">Back to Menu</button>
+            <button onclick="goToHome()">Home</button>
+        </div>
+    </div>
+
+    <div class="cart-wrapper">
+        <h2 class="selected-items-heading">Selected Items</h2>
+
+        <div id="cart-container"></div>
+
+        <div style="text-align:center;margin-top:25px;">
+    <button
+        class="checkout-btn"
+        onclick="goToDelivery()"
+        style="
+            padding:15px 35px;
+            font-size:18px;
+            min-width:300px;
+        ">
+        Proceed to Checkout
+    </button>
+</div>
+    </div>
+</div>
+
+<script src="js/cart.js"></script>
+</body>
+</html>

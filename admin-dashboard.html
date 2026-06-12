@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+
+    <style>
+        body { font-family: Arial; background:#f5f5f5; margin:0; }
+        header { background:#000; color:#fff; padding:18px 40px; display:flex; justify-content:space-between; align-items:center; }
+        .container { padding:30px; }
+        .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px; }
+        .card { background:#fff; padding:20px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,.1); }
+        .card h3 { margin-bottom:10px; color:#555; font-size:15px; }
+        .card p { font-size:26px; font-weight:bold; margin:0; }
+        table { width:100%; border-collapse:collapse; background:white; margin-top:20px; }
+        th,td { padding:12px; border:1px solid #ddd; text-align:left; vertical-align:top; }
+        th { background:#000; color:white; }
+        input, textarea { width:100%; padding:10px; margin:8px 0; }
+        button { padding:10px 15px; background:#000; color:white; border:none; border-radius:5px; cursor:pointer; }
+        .danger { background:#c0392b; }
+        section { margin-top:35px; background:#fff; padding:20px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,.08); }
+        .charts { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:30px; }
+        .chart-box { background:white; padding:20px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,.08); }
+        canvas { max-height:320px; }
+        .stars { color:gold; font-size:18px; }
+        @media(max-width:900px){ .charts{grid-template-columns:1fr;} }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/menu-data.js"></script>
+</head>
+
+<body>
+
+<header>
+    <h2>Admin Dashboard</h2>
+    <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+
+    <h2>Shop Analytics</h2>
+
+    <div class="cards">
+        <div class="card"><h3>Total Orders</h3><p id="totalOrders">0</p></div>
+        <div class="card"><h3>Today's Orders</h3><p id="todayOrders">0</p></div>
+        <div class="card"><h3>Total Revenue</h3><p id="totalRevenue">Rs. 0</p></div>
+        <div class="card"><h3>Today's Revenue</h3><p id="todayRevenue">Rs. 0</p></div>
+        <div class="card"><h3>Total Customers</h3><p id="totalCustomers">0</p></div>
+        <div class="card"><h3>Menu Items</h3><p id="totalMenuItems">0</p></div>
+        <div class="card"><h3>Table Bookings</h3><p id="totalBookings">0</p></div>
+        <div class="card"><h3>Total Reviews</h3><p id="totalReviews">0</p></div>
+        <div class="card"><h3>Average Rating</h3><p id="averageRating">0</p></div>
+    </div>
+
+    <div class="charts">
+        <div class="chart-box">
+            <h2>Revenue Summary</h2>
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+            <h2>Top Selling Items</h2>
+            <canvas id="itemsChart"></canvas>
+        </div>
+    </div>
+
+    <section>
+        <h2>Add New Menu Item</h2>
+
+        <input id="itemName" placeholder="Item Name">
+        <input id="category" placeholder="Category">
+        <textarea id="description" placeholder="Description"></textarea>
+        <input id="price" type="number" placeholder="Price">
+        <input id="imageUrl" placeholder="Image URL optional">
+
+        <button onclick="addMenuItem()">Add Item</button>
+        <p id="menuMsg"></p>
+    </section>
+
+    <section>
+        <h2>Menu Items</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Available</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="menuTable"></tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Customer Orders</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Order No</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTable"></tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Customer Reviews</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Review ID</th>
+                    <th>Order Number</th>
+                    <th>Rating</th>
+                    <th>Review</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="reviewsTable"></tbody>
+        </table>
+    </section>
+
+</div>
+
+<script>
+const admin = localStorage.getItem("adminUser");
+
+if (!admin) {
+    window.location.href = "login.html";
+}
+
+let revenueChart;
+let itemsChart;
+
+function getMenuItems() {
+    let items = JSON.parse(localStorage.getItem("menuItems")) || [];
+
+    if (items.length === 0 && typeof menuItems !== "undefined") {
+        items = menuItems;
+        localStorage.setItem("menuItems", JSON.stringify(items));
+    }
+
+    return items;
+}
+
+function saveMenuItems(items) {
+    localStorage.setItem("menuItems", JSON.stringify(items));
+}
+
+function loadDashboard() {
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const users = JSON.parse(localStorage.getItem("cafeUsers")) || [];
+    const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    const reviews = JSON.parse(localStorage.getItem("reviews")) || [];
+    const menu = getMenuItems();
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const todayOrders = orders.filter(order =>
+        order.createdAt && order.createdAt.startsWith(today)
+    );
+
+    const totalRevenue = orders.reduce((sum, order) =>
+        sum + Number(order.totalAmount || 0), 0
+    );
+
+    const todayRevenue = todayOrders.reduce((sum, order) =>
+        sum + Number(order.totalAmount || 0), 0
+    );
+
+    const averageRating = reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) / reviews.length
+        : 0;
+
+    document.getElementById("totalOrders").innerText = orders.length;
+    document.getElementById("todayOrders").innerText = todayOrders.length;
+    document.getElementById("totalRevenue").innerText = "Rs. " + totalRevenue.toFixed(2);
+    document.getElementById("todayRevenue").innerText = "Rs. " + todayRevenue.toFixed(2);
+    document.getElementById("totalCustomers").innerText = users.length;
+    document.getElementById("totalMenuItems").innerText = menu.length;
+    document.getElementById("totalBookings").innerText = bookings.length;
+    document.getElementById("totalReviews").innerText = reviews.length;
+    document.getElementById("averageRating").innerText = averageRating.toFixed(1) + " / 5";
+
+    drawRevenueChart(totalRevenue, todayRevenue);
+}
+
+function drawRevenueChart(totalRevenue, todayRevenue) {
+    const ctx = document.getElementById("revenueChart");
+
+    if (revenueChart) {
+        revenueChart.destroy();
+    }
+
+    revenueChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["Total Revenue", "Today Revenue"],
+            datasets: [{
+                label: "Revenue",
+                data: [totalRevenue, todayRevenue]
+            }]
+        }
+    });
+}
+
+function loadPopularItems() {
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const itemMap = {};
+
+    orders.forEach(order => {
+        (order.items || []).forEach(item => {
+            const name = item.itemName || item.name || "Unknown Item";
+            const qty = Number(item.quantity || 0);
+
+            if (!itemMap[name]) {
+                itemMap[name] = 0;
+            }
+
+            itemMap[name] += qty;
+        });
+    });
+
+    let topItems = Object.keys(itemMap).map(name => ({
+        itemName: name,
+        quantity: itemMap[name]
+    }));
+
+    topItems = topItems
+        .sort((a, b) => b.quantity - a.quantity)
+        .slice(0, 6);
+
+    if (topItems.length === 0) {
+        topItems = [
+            { itemName: "No Sales Yet", quantity: 0 }
+        ];
+    }
+
+    const ctx = document.getElementById("itemsChart");
+
+    if (itemsChart) {
+        itemsChart.destroy();
+    }
+
+    itemsChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: topItems.map(i => i.itemName),
+            datasets: [{
+                label: "Quantity Sold",
+                data: topItems.map(i => i.quantity)
+            }]
+        }
+    });
+}
+
+function loadMenu() {
+    const items = getMenuItems();
+
+    document.getElementById("menuTable").innerHTML = items.map(item => `
+        <tr>
+            <td>${item.itemId}</td>
+            <td>${item.itemName}</td>
+            <td>${item.category}</td>
+            <td>Rs. ${item.price}</td>
+            <td>${item.availability || "AVAILABLE"}</td>
+            <td>
+                <button class="danger" onclick="deleteMenuItem(${item.itemId})">Delete</button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+function addMenuItem() {
+    const itemName = document.getElementById("itemName").value.trim();
+    const category = document.getElementById("category").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const price = Number(document.getElementById("price").value);
+    const imageUrl = document.getElementById("imageUrl").value.trim();
+
+    if (!itemName || !category || !price) {
+        document.getElementById("menuMsg").innerText =
+            "Please enter item name, category and price.";
+        return;
+    }
+
+    const items = getMenuItems();
+
+    const newItem = {
+        itemId: Date.now(),
+        itemName,
+        category,
+        description,
+        price,
+        imageUrl: imageUrl || "images/Home-page.jpeg",
+        availability: "AVAILABLE"
+    };
+
+    items.push(newItem);
+    saveMenuItems(items);
+
+    document.getElementById("menuMsg").innerText =
+        "Menu item added successfully.";
+
+    document.getElementById("itemName").value = "";
+    document.getElementById("category").value = "";
+    document.getElementById("description").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("imageUrl").value = "";
+
+    loadMenu();
+    loadDashboard();
+}
+
+function deleteMenuItem(id) {
+    if (!confirm("Delete this menu item?")) return;
+
+    let items = getMenuItems();
+
+    items = items.filter(item => Number(item.itemId) !== Number(id));
+
+    saveMenuItems(items);
+
+    alert("Menu item deleted successfully.");
+
+    loadMenu();
+    loadDashboard();
+}
+
+function loadOrders() {
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+    document.getElementById("ordersTable").innerHTML = orders.map(order => {
+        const itemText = (order.items || []).map(i =>
+            `${i.itemName || i.name || "Item"} x ${i.quantity}`
+        ).join("<br>");
+
+        return `
+            <tr>
+                <td>${order.orderId || "-"}</td>
+                <td>${order.orderNumber || "-"}</td>
+                <td>${order.customerName || "-"}</td>
+                <td>${order.phone || "-"}</td>
+                <td>${itemText}</td>
+                <td>Rs. ${order.totalAmount || 0}</td>
+                <td>${order.orderStatus || "CONFIRMED"}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function loadReviews() {
+    const reviews = JSON.parse(localStorage.getItem("reviews")) || [];
+
+    document.getElementById("reviewsTable").innerHTML = reviews.map(r => `
+        <tr>
+            <td>${r.reviewId}</td>
+            <td>${r.orderNumber || "-"}</td>
+            <td>${r.rating || 0} / 5</td>
+            <td>${r.reviewText || "-"}</td>
+            <td>${r.reviewDate ? new Date(r.reviewDate).toLocaleString() : "-"}</td>
+        </tr>
+    `).join("");
+}
+
+function logout() {
+    localStorage.removeItem("adminUser");
+    window.location.href = "login.html";
+}
+
+loadDashboard();
+loadPopularItems();
+loadMenu();
+loadOrders();
+loadReviews();
+</script>
+
+</body>
+</html>

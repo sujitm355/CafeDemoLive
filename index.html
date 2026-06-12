@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sujit's Cafe</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <section class="home-page">
+        <header class="top-navbar">
+            <div class="logo">Sujit's Cafe</div>
+
+            <nav class="nav-links">
+                <a href="#" onclick="selectOrderType('DRIVE_THRU')">Drive-Thru Order</a>
+                <a href="#" onclick="selectOrderType('ONLINE')">Online Order</a>
+                <a href="#" onclick="requireLogin('booking.html')">Table Booking</a>
+            </nav>
+
+            <div class="profile-menu" id="profileMenuWrapper">
+                <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()">Profile ▼</button>
+                <div class="dropdown" id="profileDropdown">
+                    <a href="#" onclick="goEditProfile()">Edit Profile</a>
+                    <a href="#" onclick="goOrderHistory()">Order History</a>
+                    <a href="#" onclick="doSignOut()" style="color:#c0392b;">Sign Out</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="overlay-content">
+            <h1>Welcome to Sujit's Cafe</h1>
+            <p>Fresh burgers, sandwiches, beverages</p>
+        </div>
+    </section>
+
+    <section class="gallery-section">
+        <h2>Our Cafe Experience</h2>
+
+        <div class="gallery-grid">
+            <div class="gallery-card">
+                <img src="images/cafe-1.jpg" alt="Cafe Image 1">
+            </div>
+
+            <div class="gallery-card">
+                <img src="images/cafe-2.jpg" alt="Cafe Image 2">
+            </div>
+
+            <div class="gallery-card">
+                <img src="images/cafe-3.jpg" alt="Cafe Image 3">
+            </div>
+
+            <div class="gallery-card">
+                <img src="images/cafe-4.jpg" alt="Cafe Image 4">
+            </div>
+        </div>
+    </section>
+    <script src="js/menu-data.js"></script>
+    <script src="js/data-init.js"></script>
+    <script src="js/main.js"></script>
+
+<script>
+function requireLogin(dest) {
+    if (!getUser()) {
+        window.location.href = "login.html";
+    } else {
+        window.location.href = dest;
+    }
+}
+
+function loadProfileNav() {
+    const user = getUser();
+    const btn = document.getElementById("profileBtn");
+
+    if (user && btn) {
+        btn.textContent = user.firstName + " ▼";
+    } else if (btn) {
+        btn.textContent = "Profile ▼";
+    }
+}
+
+function toggleDropdown() {
+    const d = document.getElementById("profileDropdown");
+    d.style.display = (d.style.display === "block") ? "none" : "block";
+}
+
+document.addEventListener("click", function (e) {
+    const wrapper = document.getElementById("profileMenuWrapper");
+
+    if (wrapper && !wrapper.contains(e.target)) {
+        const d = document.getElementById("profileDropdown");
+        if (d) d.style.display = "none";
+    }
+});
+
+function goEditProfile() {
+    if (!getUser()) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    window.location.href = "edit-profile.html";
+}
+
+function goOrderHistory() {
+    if (!getUser()) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    window.location.href = "order-history.html";
+}
+
+function doSignOut() {
+    localStorage.removeItem("cafeUser");
+    localStorage.removeItem("adminUser");
+    localStorage.removeItem("staffUser");
+    window.location.href = "login.html";
+}
+
+loadProfileNav();
+</script>
+   
+</body>
+</html>

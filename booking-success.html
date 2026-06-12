@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booking Confirmation</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f5f5;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.card{
+
+    background:#fff;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
+
+    width:450px;
+}
+
+h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.detail{
+    margin:10px 0;
+}
+
+button{
+
+    width:100%;
+    padding:12px;
+
+    margin-top:15px;
+
+    border:none;
+    border-radius:8px;
+
+    cursor:pointer;
+}
+
+.download{
+
+    background:#000;
+    color:#fff;
+}
+
+.home{
+
+    background:#ddd;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="card">
+
+    <h2>🎉 Booking Confirmed</h2>
+
+    <div class="detail">
+        <strong>Booking ID:</strong>
+        <span id="bookingId"></span>
+    </div>
+
+    <div class="detail">
+        <strong>Customer:</strong>
+        <span id="customerName"></span>
+    </div>
+
+    <div class="detail">
+        <strong>Date:</strong>
+        <span id="bookingDate"></span>
+    </div>
+
+    <div class="detail">
+        <strong>Time:</strong>
+        <span id="bookingTime"></span>
+    </div>
+
+    <div class="detail">
+        <strong>Table:</strong>
+        <span id="tableId"></span>
+    </div>
+
+    <button class="download" onclick="downloadReceipt()">
+        Download Acknowledgement
+    </button>
+
+    <button class="home" onclick="window.location.href='index.html'">
+        Back To Home
+    </button>
+
+</div>
+
+<script>
+
+const booking =
+JSON.parse(localStorage.getItem("latestBooking"));
+
+if(booking){
+
+    document.getElementById("bookingId").innerText =
+        booking.bookingId;
+
+    document.getElementById("customerName").innerText =
+        booking.customerName;
+
+    document.getElementById("bookingDate").innerText =
+        booking.bookingDate;
+
+    document.getElementById("bookingTime").innerText =
+        booking.bookingTime;
+
+    document.getElementById("tableId").innerText =
+        booking.tableId;
+}
+
+function downloadReceipt(){
+
+    const text =
+
+`Sujit's Cafe
+
+Booking Confirmation
+
+Booking ID : ${booking.bookingId}
+
+Customer : ${booking.customerName}
+
+Date : ${booking.bookingDate}
+
+Time : ${booking.bookingTime}
+
+Table : ${booking.tableId}
+
+Status : CONFIRMED`;
+
+    const blob =
+    new Blob([text], {type:'text/plain'});
+
+    const a =
+    document.createElement('a');
+
+    a.href =
+    URL.createObjectURL(blob);
+
+    a.download =
+    "Booking_Acknowledgement.txt";
+
+    a.click();
+}
+
+</script>
+
+</body>
+</html>

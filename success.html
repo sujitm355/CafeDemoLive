@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Success</title>
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+.review-box {
+    margin-top: 40px;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.stars {
+    font-size: 60px;
+    margin: 15px 0;
+}
+
+.stars span {
+    cursor: pointer;
+    color: #ccc;
+    display: inline-block;
+    transition: all 0.2s ease;
+    margin: 0 5px;
+}
+
+.stars span:hover,
+.stars span.active {
+    color: gold;
+}
+
+textarea {
+    width: 100%;
+    max-width: 500px;
+    height: 100px;
+    padding: 10px;
+    margin-top: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.review-btn {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background: green;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <h1>Order Status</h1>
+</header>
+
+<main>
+<div class="success-box">
+
+    <h2>🎉 Order Successful!</h2>
+
+    <p id="success-message"></p>
+    <p id="order-number"></p>
+
+    <hr style="margin:30px 0;">
+
+    <h3>We would love your feedback ❤️</h3>
+
+    <p style="margin-bottom:20px;">
+        Please rate your experience before returning to the home page.
+    </p>
+
+    <div class="review-box">
+        <h3>Rate Your Experience</h3>
+
+        <div class="stars">
+            <span onclick="setRating(1)">★</span>
+            <span onclick="setRating(2)">★</span>
+            <span onclick="setRating(3)">★</span>
+            <span onclick="setRating(4)">★</span>
+            <span onclick="setRating(5)">★</span>
+        </div>
+
+        <textarea id="reviewText" placeholder="Write your review (optional)"></textarea>
+
+        <br>
+
+        <button class="review-btn" onclick="submitReview()">
+            Submit Review
+        </button>
+    </div>
+
+</div>
+</main>
+
+<script>
+let selectedRating = 0;
+
+document.addEventListener("DOMContentLoaded", function () {
+    const orderType = localStorage.getItem("orderType");
+    const orderNumberValue = localStorage.getItem("savedOrderNumber");
+
+    const successMessage = document.getElementById("success-message");
+    const orderNumber = document.getElementById("order-number");
+
+    if (orderType === "DRIVE_THRU") {
+        successMessage.innerText = "Please collect your order at the collection window.";
+    } else if (orderType === "ONLINE") {
+        successMessage.innerText = "Your food will be delivered shortly.";
+    } else {
+        successMessage.innerText = "Your order has been placed successfully.";
+    }
+
+    orderNumber.innerText = "Order ID: " + (orderNumberValue || "Not Available");
+});
+
+function setRating(rating) {
+    selectedRating = rating;
+
+    const stars = document.querySelectorAll(".stars span");
+
+    stars.forEach(function (star, index) {
+        if (index < rating) {
+            star.classList.add("active");
+        } else {
+            star.classList.remove("active");
+        }
+    });
+}
+
+function submitReview() {
+    if (selectedRating === 0) {
+        alert("Please select a rating.");
+        return;
+    }
+
+    const reviewText = document.getElementById("reviewText").value.trim();
+    const orderNumber = localStorage.getItem("savedOrderNumber");
+    const user = JSON.parse(localStorage.getItem("cafeUser")) || {};
+
+    const reviewData = {
+        reviewId: Date.now(),
+        customerId: user.customerId || null,
+        customerName: user.firstName ? user.firstName + " " + user.lastName : "Demo Customer",
+        orderNumber: orderNumber,
+        rating: selectedRating,
+        reviewText: reviewText,
+        reviewDate: new Date().toISOString()
+    };
+
+    const reviews = JSON.parse(localStorage.getItem("reviews")) || [];
+    reviews.push(reviewData);
+
+    localStorage.setItem("reviews", JSON.stringify(reviews));
+
+    alert("🎉 Thank you for your feedback!");
+
+    goToHome();
+}
+
+function goToHome() {
+    localStorage.removeItem("cart");
+    localStorage.removeItem("customerDetails");
+    localStorage.removeItem("paymentDetails");
+    localStorage.removeItem("savedOrderNumber");
+    localStorage.removeItem("orderType");
+
+    window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>

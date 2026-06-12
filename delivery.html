@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Information</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="delivery-container">
+        <div class="delivery-header">
+            <h1>Enter Delivery Information</h1>
+            <div class="delivery-nav-buttons">
+                <button onclick="goToCart()">Back to Cart</button>
+                <button onclick="goToHome()">Home</button>
+            </div>
+        </div>
+
+        <div class="delivery-form-card">
+            <form id="deliveryForm" class="delivery-form">
+                <div>
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+
+                <div>
+                    <label for="phone">Phone Number</label>
+                    <input type="text" id="phone" required>
+                </div>
+
+                <div class="full-width">
+                    <label for="address">Address</label>
+                    <textarea id="address" required></textarea>
+                </div>
+
+                <div>
+                    <label for="city">City</label>
+                    <input type="text" id="city" required>
+                </div>
+
+                <div>
+                    <label for="pincode">Pincode</label>
+                    <input type="text" id="pincode" required>
+                </div>
+
+                <div class="delivery-btn-wrapper full-width">
+                    <button type="submit" class="primary-btn">Proceed to Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/delivery.js"></script>
+</body>
+</html>
