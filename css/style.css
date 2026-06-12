@@ -2676,3 +2676,52 @@ button {
 .gallery-card:hover img{
     transform:scale(1.05);
 }
+
+.tracking-box {
+    margin-top: 18px;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e0dbd4;
+    border-radius: 10px;
+}
+
+.tracking-title {
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.tracking-steps {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.track-step {
+    flex: 1;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #999;
+    position: relative;
+}
+
+.track-step .circle {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #ddd;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 6px;
+    font-size: 13px;
+}
+
+.track-step.active {
+    color: #111;
+    font-weight: 700;
+}
+
+.track-step.active .circle {
+    background: #16a34a;
+}
