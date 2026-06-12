@@ -465,6 +465,55 @@ function toggleOrder(id) {
     chevron.classList.toggle("open", !isOpen);
 }
 
+function getTrackingStep(orderStatus) {
+    if (!orderStatus) return 1;
+
+    switch (orderStatus.toUpperCase()) {
+        case "PLACED":
+        case "CONFIRMED":
+            return 1;
+
+        case "PREPARING":
+        case "BEING_PREPARED":
+            return 2;
+
+        case "OUT_FOR_DELIVERY":
+            return 3;
+
+        case "DELIVERED":
+            return 4;
+
+        default:
+            return 1;
+    }
+}
+
+function buildTracking(orderStatus) {
+    const currentStep = getTrackingStep(orderStatus);
+
+    const steps = [
+        "Food Ordered",
+        "Being Prepared",
+        "Out for Delivery",
+        "Delivered"
+    ];
+
+    return `
+        <div class="tracking-box">
+            <div class="tracking-title">Order Tracking</div>
+
+            <div class="tracking-steps">
+                ${steps.map((step, index) => `
+                    <div class="track-step ${index + 1 <= currentStep ? "active" : ""}">
+                        <div class="circle">${index + 1 <= currentStep ? "✓" : index + 1}</div>
+                        <div>${step}</div>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+    `;
+}
+
 function buildOrderCard(order) {
     const itemRows = (order.items || []).map(item => `
         <tr>
@@ -528,6 +577,7 @@ function buildOrderCard(order) {
                 <span class="total-label">Order Total</span>
                 <span class="total-value">₹${parseFloat(order.totalAmount || 0).toFixed(2)}</span>
             </div>
+            ${buildTracking(order.orderStatus)}
         </div>
     </div>`;
 }
